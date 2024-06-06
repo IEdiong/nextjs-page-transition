@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Navigation from './components/navigation';
-import { Suspense } from 'react';
-import { NavigationLoader } from './components/navigationLoader';
+import {
+  ProgressBar,
+  ProgressBarProvider,
+} from './components/progressComponent';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,11 +22,11 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={inter.className}>
-        <Suspense fallback={null}>
-          <NavigationLoader />
-        </Suspense>
-        <Navigation />
-        {children}
+        <ProgressBarProvider>
+          <ProgressBar className='fixed h-1 shadow-lg shadow-sky-500/20 bg-red-800 top-0' />
+          <Navigation />
+          {children}
+        </ProgressBarProvider>
       </body>
     </html>
   );

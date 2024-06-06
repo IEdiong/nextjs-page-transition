@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@/app/components/link';
 
 export default function Navigation() {
   return (

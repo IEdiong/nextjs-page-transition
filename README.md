@@ -1,5 +1,11 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+![](./demo/demo-video.mov)
+
+<video width="384" height="240" controls>
+  <source src="./demo/demo-video.mov" type="video/mov">
+</video>
+
 ## Getting Started
 
 First, run the development server:

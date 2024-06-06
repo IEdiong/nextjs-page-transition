@@ -1,11 +1,11 @@
 'use client';
 import React from 'react';
 import {
+  useMotionValue,
+  useTransform,
+  animate,
+  motion,
   useMotionTemplate,
-  useSpring,
-  m,
-  LazyMotion,
-  domAnimation,
 } from 'framer-motion';
 import {
   ReactNode,
@@ -73,31 +73,18 @@ function getDiff(
 export function useProgressInternal() {
   const [loading, setLoading] = useOptimistic(false);
 
-  const spring = useSpring(0, {
-    damping: 25,
-    mass: 0.5,
-    stiffness: 300,
-    restDelta: 0.1,
-  });
-
-  useInterval(
-    () => {
-      // If we start progress but the bar is currently complete, reset it first.
-      if (spring.get() === 100) {
-        spring.jump(0);
-      }
-
-      const current = spring.get();
-      spring.set(Math.min(current + getDiff(current), 99));
-    },
-    loading ? 750 : null
-  );
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, (latest) => Math.round(latest));
 
   useEffect(() => {
+    const controls = animate(count, 100, { duration: 2 });
+
     if (!loading) {
-      spring.jump(0);
+      count.set(0);
     }
-  }, [spring, loading]);
+
+    return () => controls.stop();
+  }, [count, loading]);
 
   /**
    * Start the progress.
@@ -106,7 +93,7 @@ export function useProgressInternal() {
     setLoading(true);
   }
 
-  return { loading, spring, start };
+  return { loading, rounded, start };
 }
 
 /**
@@ -158,16 +145,46 @@ export function ProgressBarProvider({ children }: { children: ReactNode }) {
  * @returns The rendered progress bar component.
  */
 export function ProgressBar({ className }: { className: string }) {
-  const progress = useProgressBarContext();
-  const width = useMotionTemplate`${progress.spring}%`;
+  const { rounded, loading } = useProgressBarContext();
+
+  // if (!loading) {
+  //   return null;
+  // }
+
+  const value = useMotionTemplate`${rounded}%`;
 
   return (
-    <LazyMotion features={domAnimation}>
-      {progress.loading && (
-        <m.div style={{ width }} exit={{ opacity: 0 }} className={className} />
-      )}
-    </LazyMotion>
+    loading && (
+      <motion.div
+        initial={{ y: '-100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '-100%' }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className='absolute h-screen w-full left-0 top-0 flex items-center justify-center text-[250px] font-semibold text-red-600 bg-white origin-top'
+      >
+        {value}
+      </motion.div>
+    )
   );
+}
+
+{
+  /* <>
+  <motion.div
+    className='slide-in'
+    initial={{ scaleY: 0 }}
+    animate={{ scaleY: 0 }}
+    exit={{ scaleY: 1 }}
+    transition={{ duration: 6, ease: [0.22, 1, 0.36, 1] }}
+  ></motion.div>
+  <motion.div
+    className='slide-out'
+    initial={{ scaleY: 1 }}
+    animate={{ scaleY: 0 }}
+    exit={{ scaleY: 0 }}
+    transition={{ duration: 6, ease: [0.22, 1, 0.36, 1] }}
+  ></motion.div>
+</>; */
 }
 
 type StartProgress = () => void;

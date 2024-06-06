@@ -25,7 +25,7 @@ export function Link({
         startTransition(async () => {
           startProgress();
           // Introduces artificial slowdown
-          await new Promise((resolve) => setTimeout(resolve, 2000));
+          await new Promise((resolve) => setTimeout(resolve, 3000));
           const url = href.toString();
           if (replace) {
             router.replace(url);

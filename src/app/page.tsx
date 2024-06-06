@@ -14,7 +14,7 @@ export default function Home() {
           startTransition(async () => {
             startProgress();
             // Introduces artificial slowdown
-            await new Promise((resolve) => setTimeout(resolve, 2000));
+            await new Promise((resolve) => setTimeout(resolve, 2500));
             setCount((count) => count + 1);
           });
         }}
